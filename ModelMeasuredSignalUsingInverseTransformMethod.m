@@ -39,7 +39,9 @@ threshold   = sqrt(2*fSampleNew/Bw*noisePow);                              % set
 % Find the starting index of first interference signal
 startIndex = find(abs(IQSignalFilt)>threshold,1);                          
 intParams = int_detect(IQSignalFilt,fSampleNew,threshold);
-ampLevel = intParams(:,1);
+pulseWidth = intParams(:,1);
+ampLevel = intParams(:,2);
+tau = intParams(:,3);
 %% Inverse Transform Method
 % Use inverse transform method to find an equivalent signal for
 % interference.
@@ -51,7 +53,7 @@ ampLevelCDF = calculateCDF(db(ampLevel),numofCDFPoints);
 tauCDF = calculateCDF(tau,numofCDFPoints);
 pulseWidthCDF = calculateCDF(pulseWidth,numofCDFPoints);
 %% Genrate Equivalent Signal
-eqSignal = ITMeqsignal(pulseWidthCDF,ampLevelCDF,tauCDF,fSampleNew,noisePow,processTime);
+eqSignal = generate_ITM_eq_signal(ampLevelCDF,tauCDF,pulseWidthCDF,processTime);
 eqSignal = (sqrt(fSampleNew/Bw))*eqSignal; 
 eqSignalFilt = conv(eqSignal, eqNum/sum(eqNum),'same');                  % filter signals out of BLE band.
 intSignals = [IQSignalFilt;eqSignalFilt];

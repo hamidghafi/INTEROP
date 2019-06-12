@@ -6,8 +6,11 @@
 % Y.mat matlab variable consists of measured IQ data variables and
 % properties. XDelta is the sampling period and Y is the vector of measured
 % IQ data.
-addpath(genpath(cd));
-load  Y.mat;
+addpath('D:\Messung Mediamarkt Graz\Recordings')
+addpath('P:\PRJ EFRE Interreg InterOP\HK\HK_Codes\Measurement Analysis\AUXFUNCTIONS')
+addpath('P:\PRJ EFRE Interreg InterOP\HK\HK_Codes\BLE_Functions')
+
+load  20170704T181615721.mat;
 fSample = 1/XDelta;
 % Truncate the signal to reduce memory usage.
 processTime = 600e-3;                                                      % time period (length) of processing
@@ -50,13 +53,13 @@ eqSignalFilt = conv(eqSignal, eqNum/sum(eqNum),'same');                    % fil
 intSignals = [IQSignalFilt;eqSignalFilt];
 
 %% Generate Plot
-gainListdB = -110:1:-58;
+gainListdB = -140:1:-4;
 BER = compareBER(intSignals,fSampleNew,gainListdB);
 figure; 
 semilogy(gainListdB, max(BER(:, 1),eps), 'linewidth', 1)
 hold on;
 semilogy(gainListdB, max(BER(:,2), eps), '*', 'linewidth', 1)
-ylim([0.0001 0.1])
+ylim([0.005 0.1])
 xlabel('Gain (dB)', 'Interpreter', 'latex')
 ylabel('BER', 'Interpreter', 'latex')
 legendCell = {'Measurement', 'Correlated Variables Inverse Transform Method'};
