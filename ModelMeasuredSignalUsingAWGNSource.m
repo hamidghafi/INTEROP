@@ -12,10 +12,10 @@ addpath('P:\PRJ EFRE Interreg InterOP\HK\HK_Codes\BLE_Functions')
 load  20170704T181615721.mat;
 fSample = 1/XDelta;
 % Truncate the signal to reduce memory usage.
-processTime = 200e-3;                                                      % time period (length) of processing
+processTime = 600e-3;                                                      % time period (length) of processing
 signalLength = fix(processTime*fSample);                                   % number of indexes corresponding to processing time
 % Pick a fraction of measured signal
-nSlot = 12;                                                                % nth slot of the measured signal
+nSlot = 6;                                                                % nth slot of the measured signal
 IQSignal = Y((nSlot-1)*signalLength+1:(nSlot)*signalLength);
 clear Y
 
@@ -34,10 +34,9 @@ IQSignalFilt = conv(IQSignalRes, eqNum/sum(eqNum),'same');                 % fil
 noisePow = var(IQSignalFilt(1:10000));
 
 %% Find the Interferences 
-threshold   = sqrt(2*fSampleNew/Bw*noisePow);                              % sets a threshold to detect interference signals (3dB above the noise floor)
+threshold   = sqrt(4*fSampleNew/Bw*noisePow);                              % sets a threshold to detect interference signals (3dB above the noise floor)
 % Find the starting index for first interference signal
-startIndex = find(abs(IQSignalFilt)>threshold,1);                          
-[intParams, tau] = int_detect(IQSignalFilt,fSampleNew,threshold);
+[intParams, startIndex] = int_detect(IQSignalFilt,fSampleNew,threshold);
 
 %% First Method (AWGN Source)
 eqSignal = generate_AWGN_eq_signal(intParams,fSampleNew,startIndex,noisePow,processTime);

@@ -9,8 +9,12 @@
 addpath('D:\Messung Mediamarkt Graz\Recordings')
 addpath('P:\PRJ EFRE Interreg InterOP\HK\HK_Codes\Measurement Analysis\AUXFUNCTIONS')
 addpath('P:\PRJ EFRE Interreg InterOP\HK\HK_Codes\BLE_Functions')
-
-load  20170704T181615721.mat;
+tic;
+fprintf('loading data...\n');
+load  20170704T182310755.mat;
+fprintf('data loaded. loading time %f s\n',toc);
+tic
+fprintf('calculating equivalent signal ...\n');
 fSample = 1/XDelta;
 % Truncate the signal to reduce memory usage.
 processTime = 600e-3;                                                      % time period (length) of processing
@@ -35,7 +39,7 @@ IQSignalFilt = conv(IQSignalRes, eqNum/sum(eqNum),'same');                 % fil
 noisePow = var(IQSignalFilt(1:10000));
 
 %% Find the Interferences 
-threshold   = sqrt(2*fSampleNew/Bw*noisePow);                              % sets a threshold to detect interference signals (3dB above the noise floor)
+threshold   = sqrt(4*fSampleNew/Bw*noisePow);                              % sets a threshold to detect interference signals (3dB above the noise floor)
 % Find the starting index of first interference signal
 startIndex = find(abs(IQSignalFilt)>threshold,1);                          
 intParams = int_detect(IQSignalFilt,fSampleNew,threshold);
@@ -47,10 +51,11 @@ intParams = int_detect(IQSignalFilt,fSampleNew,threshold);
 % to be random variables.
 
 %% Genrate Equivalent Signal
-eqSignal = generate_CITM_eq_signal(intParams,fSampleNew,noisePow,processTime);
+eqSignal = generate_CITM_eq_signal(intParams,fSampleNew,noisePow,processTime,'correlatedVars','on');
 eqSignal = (sqrt(fSampleNew/Bw))*eqSignal; 
 eqSignalFilt = conv(eqSignal, eqNum/sum(eqNum),'same');                    % filter signals out of BLE band.
 intSignals = [IQSignalFilt;eqSignalFilt];
+fprintf('equivalent signal was calculated. run time %f s\n',toc);
 
 %% Generate Plot
 gainListdB = -140:1:-4;
