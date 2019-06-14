@@ -16,7 +16,7 @@ fprintf('data loaded. loading time %f s\n',toc);
 tic
 fprintf('calculating equivalent signal ...\n');
 fSample = 1/XDelta;
-% Truncate the signal to reduce memory usage.
+% Truncate the signal to reduce memory usage. test
 processTime = 600e-3;                                                      % time period (length) of processing
 signalLength = fix(processTime*fSample);                                   % number of indexes corresponding to processing time
 % Pick a fraction of measured signal
